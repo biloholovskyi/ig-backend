@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  galleries    Gallery[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Gallery {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  name                String
+  description         String?
+  isPublished         Boolean  @default(false)
+  isPasswordProtected Boolean  @default(false)
+  passwordHash        String?
+  coverPhotoId        String?
+  ownerId             String
+  owner               User     @relation(fields: [ownerId], references: [id])
+  photos              Photo[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([slug])
+}
+
+model Photo {
+  id           String   @id @default(cuid())
+  galleryId    String
+  gallery      Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  order        Int      @default(0)
+  caption      String?
+  originalUrl  String
+  largeUrl     String
+  thumbnailUrl String
+  width        Int
+  height       Int
+  sizeBytes    Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([galleryId, order])
+}
