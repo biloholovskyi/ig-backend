@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
-import { JwtConfig } from '@/configs/jwt.config'
+import * as jwksRsa from 'jwks-rsa'
+import { SupabaseConfig } from '@/configs/supabase.config'
 
 export interface JwtPayload {
   sub: string
@@ -12,11 +13,16 @@ export interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService) {
-    const jwtConfig = configService.get<JwtConfig>('jwt')!
+    const supabaseConfig = configService.get<SupabaseConfig>('supabase')!
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: jwtConfig.secret,
+      secretOrKeyProvider: jwksRsa.passportJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `${supabaseConfig.url}/auth/v1/.well-known/jwks.json`,
+      }),
+      algorithms: ['ES256'],
     })
   }
 

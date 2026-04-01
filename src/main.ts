@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core'
+import { ConfigService } from '@nestjs/config'
 import * as cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import { AppModule } from './app.module'
@@ -10,7 +11,7 @@ import { globalValidationPipe } from '@/shared/pipes/validation.pipe'
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule)
 
-  const appConfig = app.get<AppConfig>('app')
+  const appConfig = app.get(ConfigService).get<AppConfig>('app')!
 
   app.setGlobalPrefix('api')
   app.use(cookieParser())

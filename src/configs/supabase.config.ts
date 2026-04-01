@@ -8,6 +8,7 @@ function required(key: string): string {
 
 export const supabaseConfig = registerAs('supabase', () => ({
   url: required('SUPABASE_URL'),
+  anonKey: required('SUPABASE_ANON_KEY'),
   serviceKey: required('SUPABASE_SERVICE_KEY'),
 }))
 

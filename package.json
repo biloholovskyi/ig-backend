@@ -1,6 +1,6 @@
 {
   "name": "ig-backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "start:prod": "node dist/main",
@@ -38,6 +38,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.0.0",
+    "jwks-rsa": "^4.0.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",

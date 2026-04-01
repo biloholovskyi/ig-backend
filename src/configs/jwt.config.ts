@@ -7,10 +7,7 @@ function required(key: string): string {
 }
 
 export const jwtConfig = registerAs('jwt', () => ({
-  secret: required('JWT_SECRET'),
-  refreshSecret: required('JWT_REFRESH_SECRET'),
-  expiresIn: '15m',
-  refreshExpiresIn: '7d',
+  secret: required('SUPABASE_JWT_SECRET'),
 }))
 
 export type JwtConfig = ReturnType<typeof jwtConfig>

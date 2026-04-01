@@ -7,18 +7,27 @@ type SupabaseClientType = ReturnType<typeof createClient>
 
 @Injectable()
 export class SupabaseService {
-  private readonly client: SupabaseClientType
+  private readonly _adminClient: SupabaseClientType
+  private readonly _anonClient: SupabaseClientType
 
   constructor(private readonly configService: ConfigService) {
     const config = this.configService.get<SupabaseConfig>('supabase')!
-    this.client = createClient(config.url, config.serviceKey)
+    this._adminClient = createClient(config.url, config.serviceKey)
+    this._anonClient = createClient(config.url, config.anonKey)
   }
 
+  /** Use for file storage operations */
   get storage() {
-    return this.client.storage
+    return this._adminClient.storage
   }
 
+  /** Use for admin auth operations: createUser, signOut(jwt) */
+  get adminAuth() {
+    return this._adminClient.auth
+  }
+
+  /** Use for regular auth operations: signInWithPassword, refreshSession */
   get auth() {
-    return this.client.auth
+    return this._anonClient.auth
   }
 }

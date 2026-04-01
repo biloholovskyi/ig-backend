@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rtk pnpm:*)",
+      "Bash(rtk tsc:*)",
+      "Bash(pnpm exec:*)",
+      "Bash(pnpm prisma:generate)",
+      "Bash(rtk lint:*)",
+      "Bash(pnpm add:*)"
+    ]
+  }
+}
