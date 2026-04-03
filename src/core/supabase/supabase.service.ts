@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { createClient } from '@supabase/supabase-js'
 import { SupabaseConfig } from '@/configs/supabase.config'
+import { STORAGE_BUCKET } from '@/shared/constants'
 
 type SupabaseClientType = ReturnType<typeof createClient>
 
@@ -29,5 +30,24 @@ export class SupabaseService {
   /** Use for regular auth operations: signInWithPassword, refreshSession */
   get auth() {
     return this._anonClient.auth
+  }
+
+  async uploadFile(path: string, buffer: Buffer, contentType: string): Promise<void> {
+    const { error } = await this._adminClient.storage.from(STORAGE_BUCKET).upload(path, buffer, {
+      contentType,
+      upsert: true,
+    })
+    if (error) throw new InternalServerErrorException(`Storage upload failed: ${error.message}`)
+  }
+
+  getPublicUrl(path: string): string {
+    const { data } = this._adminClient.storage.from(STORAGE_BUCKET).getPublicUrl(path)
+    return data.publicUrl
+  }
+
+  async deleteFiles(paths: string[]): Promise<void> {
+    if (paths.length === 0) return
+    const { error } = await this._adminClient.storage.from(STORAGE_BUCKET).remove(paths)
+    if (error) throw new InternalServerErrorException(`Storage delete failed: ${error.message}`)
   }
 }
